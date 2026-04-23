@@ -27,7 +27,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="section-padding bg-ocean-950">
+    <section id="contact" className="scroll-mt-16 section-padding bg-ocean-950">
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Left column — info */}

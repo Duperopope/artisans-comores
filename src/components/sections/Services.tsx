@@ -70,7 +70,7 @@ const services = [
 
 export default function Services() {
   return (
-    <section id="services" className="section-padding bg-sand-50">
+    <section id="services" className="scroll-mt-16 section-padding bg-sand-50">
       <div className="container-custom">
         {/* Header */}
         <Animated>

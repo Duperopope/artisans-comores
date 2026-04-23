@@ -18,7 +18,7 @@ const projets: Projet[] = [
   { id: 1, titre: "Salle de bain complète", categorie: "plomberie", lieu: "Moroni", description: "Installation complète : douche italienne, lavabo suspendu, WC et robinetterie chromée." },
   { id: 2, titre: "Réseau eau courante", categorie: "plomberie", lieu: "Mitsamiouli", description: "Mise en place du réseau d'alimentation en eau pour une villa de 250 m²." },
   { id: 3, titre: "Tableau électrique neuf", categorie: "electricite", lieu: "Moroni", description: "Remplacement du tableau vétuste par un tableau 24 modules avec différentiels." },
-  { id: 4, titre: "Pannneaux solaires", categorie: "electricite", lieu: "Domoni", description: "Installation de 8 panneaux photovoltaïques + batteries pour autonomie complète." },
+  { id: 4, titre: "Panneaux solaires", categorie: "electricite", lieu: "Domoni", description: "Installation de 8 panneaux photovoltaïques + batteries pour autonomie complète." },
   { id: 5, titre: "Fondations villa R+2", categorie: "gros-oeuvre", lieu: "Fomboni", description: "Étude de sol et coulage des semelles filantes pour une construction de 180 m²." },
   { id: 6, titre: "Extension maison familiale", categorie: "gros-oeuvre", lieu: "Moroni", description: "Ajout d'une chambre de 30 m² avec dalle, murs porteurs et toiture." },
   { id: 7, titre: "Carrelage salon et terrasse", categorie: "finition", lieu: "Mitsamiouli", description: "Pose de 90 m² de carrelage 60×60 grès cérame, joints époxy." },
