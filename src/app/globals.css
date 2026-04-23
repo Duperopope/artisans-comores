@@ -1,66 +1,252 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme inline {
-  --color-ocean: oklch(0.45 0.18 240);
-  --color-ocean-light: oklch(0.65 0.14 240);
-  --color-ocean-dark: oklch(0.28 0.18 240);
-  --color-tropical: oklch(0.50 0.16 145);
-  --color-tropical-light: oklch(0.70 0.13 145);
-  --color-terracotta: oklch(0.55 0.18 35);
-  --color-sand: oklch(0.90 0.06 80);
-  --color-sand-dark: oklch(0.75 0.06 80);
-  --color-white: #ffffff;
-  --color-gray-50: #f9fafb;
-  --color-gray-100: #f3f4f6;
-  --color-gray-600: #4b5563;
-  --color-gray-900: #111827;
+/* ─── Design Tokens — CSS Custom Properties ─── */
+:root {
+  /* Colors — light mode */
+  --color-bg-primary: #faf7f0;        /* sand-50 */
+  --color-bg-secondary: #f3ede0;      /* sand-100 */
+  --color-bg-card: #ffffff;
+  --color-text-primary: #0d2e4a;      /* ocean-900 */
+  --color-text-body: #3d3d3d;
+  --color-text-muted: #6b7280;
+
+  --color-brand-primary: #1a5c94;     /* ocean-600 */
+  --color-brand-primary-hover: #0d2e4a; /* ocean-900 */
+  --color-brand-secondary: #2a7a4b;   /* tropical-600 */
+  --color-brand-accent: #c45e2a;      /* terracotta-600 */
+
+  --color-border: #e8dfc9;            /* sand-200 */
+  --color-focus-ring: #1a5c94;        /* ocean-600 */
+
+  /* Typography */
+  --font-heading: "Outfit", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+
+  --line-height-tight: 1.2;
+  --line-height-body: 1.6;
+  --letter-spacing-heading: -0.025em;
+
+  /* Spacing */
+  --spacing-section: 5rem;
+  --spacing-section-sm: 3rem;
+  --container-max-width: 1280px;
+
+  /* Shadows */
+  --shadow-card: 0 2px 16px rgba(13, 46, 74, 0.08);
+  --shadow-card-hover: 0 8px 32px rgba(13, 46, 74, 0.16);
+  --shadow-glass: 0 4px 32px rgba(13, 46, 74, 0.12);
+
+  /* Border radius */
+  --radius-card: 1rem;
+  --radius-card-lg: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-blur: 12px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
 }
 
+/* ─── Dark Mode ─── */
+.dark {
+  --color-bg-primary: #0d2e4a;        /* ocean-900 */
+  --color-bg-secondary: #14405e;      /* ocean-800 */
+  --color-bg-card: #154d7e;           /* ocean-700 */
+  --color-text-primary: #f3ede0;      /* sand-100 */
+  --color-text-body: #e8dfc9;         /* sand-200 */
+  --color-text-muted: #93a3b8;
+
+  --color-border: rgba(255, 255, 255, 0.1);
+
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.15);
+}
+
+/* ─── Base Styles ─── */
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   html {
+    font-size: 16px;
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
   body {
-    @apply bg-white text-gray-900 antialiased;
+    font-family: var(--font-body);
+    color: var(--color-text-body);
+    background-color: var(--color-bg-primary);
+    line-height: var(--line-height-body);
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-heading);
+  }
+
+  h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 700; }
+  h2 { font-size: clamp(1.5rem, 3.5vw, 2.5rem); font-weight: 600; }
+  h3 { font-size: 1.5rem; font-weight: 600; }
+  h4 { font-size: 1.25rem; font-weight: 600; }
+
+  /* Accessible focus styles */
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Prefers reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
   }
 }
 
-@layer utilities {
-  .container-site {
-    @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
+/* ─── Component Utilities ─── */
+@layer components {
+  /* Container */
+  .container-custom {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: var(--container-max-width);
   }
-  .section {
-    @apply py-16 md:py-24;
+
+  /* Section spacing */
+  .section-padding {
+    @apply py-12 lg:py-20;
   }
-  .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
-    background-color: var(--color-ocean);
-  }
-  .btn-primary:hover {
-    background-color: var(--color-ocean-dark);
-  }
-  .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold border-2 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
-    border-color: var(--color-ocean);
-    color: var(--color-ocean);
-  }
-  .btn-secondary:hover {
-    background-color: var(--color-ocean);
-    @apply text-white;
-  }
-  .artisan-card {
-    @apply bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow;
-  }
+
+  /* Skip link (accessibilité) */
+  /* focus:not-sr-only resets padding:0, so padding must be scoped to :focus (WCAG 2.5.8) */
   .skip-link {
-    @apply sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-gray-900 focus:rounded focus:shadow-lg;
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50;
+    @apply bg-ocean-600 text-white focus:px-4 focus:py-2 focus:min-h-[24px] rounded-xl font-semibold;
+  }
+
+  /* Glassmorphism card */
+  .glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-radius: var(--radius-card-lg);
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3;
+    @apply bg-ocean-600 text-white font-inter font-semibold rounded-xl;
+    @apply hover:bg-ocean-900 transition-colors duration-200;
+    @apply focus-visible:ring-2 focus-visible:ring-ocean-600 focus-visible:ring-offset-2;
+    @apply min-h-[44px];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3;
+    @apply border-2 border-ocean-600 text-ocean-600 font-inter font-semibold rounded-xl;
+    @apply hover:bg-ocean-50 transition-colors duration-200;
+    @apply focus-visible:ring-2 focus-visible:ring-ocean-600 focus-visible:ring-offset-2;
+    @apply min-h-[44px];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2;
+    @apply text-ocean-600 font-inter font-semibold;
+    @apply hover:underline underline-offset-4 transition-colors duration-200;
+    @apply focus-visible:ring-2 focus-visible:ring-ocean-600 focus-visible:ring-offset-2;
+    @apply min-h-[44px];
+  }
+
+  /* Artisan badge */
+  .badge-specialty {
+    @apply inline-flex items-center px-3 py-1;
+    @apply bg-tropical-600 text-white rounded-full;
+    @apply font-inter text-sm font-medium;
+  }
+
+  /* Form field */
+  .form-field {
+    @apply w-full px-4 py-3 rounded-xl;
+    @apply bg-white border border-sand-200 text-ocean-900;
+    @apply placeholder:text-neutral-400;
+    @apply focus:outline-none focus:ring-2 focus:ring-ocean-600 focus:border-transparent;
+    @apply transition-shadow duration-200;
+  }
+
+  .form-label {
+    @apply block font-inter font-semibold text-sm text-neutral-700 mb-1;
+  }
+
+  .form-error {
+    @apply flex items-center gap-1 mt-1 text-sm text-red-600;
+  }
+
+  /* Artisan card */
+  .artisan-card {
+    @apply bg-white rounded-2xl shadow-card overflow-hidden;
+    @apply hover:shadow-card-hover transition-shadow duration-300;
+  }
+
+  /* Section heading */
+  .section-heading {
+    @apply font-outfit font-bold text-ocean-900 dark:text-sand-50;
+  }
+}
+
+/* ─── Masonry Gallery ─── */
+.masonry-grid {
+  columns: 1;
+  column-gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .masonry-grid {
+    columns: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .masonry-grid {
+    columns: 3;
+    column-gap: 1.5rem;
+  }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .masonry-item {
+    margin-bottom: 1.5rem;
   }
 }

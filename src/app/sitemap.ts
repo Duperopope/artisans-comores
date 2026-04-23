@@ -1,25 +1,18 @@
-import type { MetadataRoute } from "next";
+import { MetadataRoute } from "next";
 
 export const dynamic = "force-static";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://artisans-comores.com";
+const BASE_URL = "https://artisans-comores.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = [
-    { path: "/", priority: 1.0, changeFrequency: "monthly" as const },
-    { path: "/a-propos", priority: 0.7, changeFrequency: "yearly" as const },
-    { path: "/artisans/plombier", priority: 0.9, changeFrequency: "monthly" as const },
-    { path: "/artisans/electricien", priority: 0.9, changeFrequency: "monthly" as const },
-    { path: "/artisans/gros-oeuvre", priority: 0.9, changeFrequency: "monthly" as const },
-    { path: "/artisans/finition", priority: 0.9, changeFrequency: "monthly" as const },
-    { path: "/galerie", priority: 0.8, changeFrequency: "monthly" as const },
-    { path: "/contact", priority: 0.8, changeFrequency: "yearly" as const },
+  return [
+    { url: BASE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
+    { url: `${BASE_URL}/a-propos`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/galerie`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/artisans/plombier`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/artisans/electricien`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/artisans/gros-oeuvre`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/artisans/finition`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
   ];
-
-  return routes.map(({ path, priority, changeFrequency }) => ({
-    url: `${BASE_URL}${path}`,
-    lastModified: new Date(),
-    changeFrequency,
-    priority,
-  }));
 }
