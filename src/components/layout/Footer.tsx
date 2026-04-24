@@ -13,7 +13,7 @@ export default function Footer() {
               Artisans<span className="text-terracotta-400">Comores</span>
             </div>
             <p className="text-white/60 text-sm font-inter leading-relaxed max-w-xs">
-              Un collectif de quatre artisans qualifiés aux Comores, au service de la diaspora comorienne en France.
+              Un collectif d'artisans qualifiés aux Comores, au service de la diaspora comorienne en France.
             </p>
           </div>
 
@@ -56,7 +56,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="text-white/55 text-xs pt-2">
-                Réponse sous 48h
+                Réponse sous 1 semaine
               </li>
             </ul>
           </div>

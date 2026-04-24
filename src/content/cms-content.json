@@ -1,0 +1,63 @@
+{
+  "hero": {
+    "badge": "Artisans qualifiés — Comores",
+    "title": "Vos travaux aux Comores,",
+    "titleHighlight": "réalisés par des mains de maître",
+    "description": "Nous connectons la diaspora comorienne en France avec des artisans expérimentés aux Comores. Plomberie, électricité, gros œuvre et finition — un seul interlocuteur, une confiance absolue.",
+    "ctaPrimary": "Obtenir un devis gratuit",
+    "ctaSecondary": "Nos services",
+    "stats": [
+      { "value": "1 sem.", "label": "Pour votre devis" },
+      { "value": "100%", "label": "Qualité garantie" },
+      { "value": "0€", "label": "Devis sans engagement" }
+    ],
+    "imageUrl": "",
+    "imageAlt": "Chantier en cours aux Comores"
+  },
+  "services": [
+    {
+      "id": "plombier",
+      "title": "Plomberie",
+      "description": "Installation et réparation de canalisations, sanitaires, chauffe-eau et systèmes d'alimentation en eau. Interventions rapides sur toute l'île.",
+      "imageUrl": ""
+    },
+    {
+      "id": "electricien",
+      "title": "Électricité",
+      "description": "Mise aux normes, installation de tableaux électriques, câblage, prises et éclairage. Travaux sûrs et conformes aux standards en vigueur.",
+      "imageUrl": ""
+    },
+    {
+      "id": "gros-oeuvre",
+      "title": "Gros œuvre",
+      "description": "Construction de fondations, murs porteurs, dalles et structure générale. Des bases solides pour toutes vos constructions et rénovations.",
+      "imageUrl": ""
+    },
+    {
+      "id": "finition",
+      "title": "Finition",
+      "description": "Enduits, carrelage, peinture, pose de parquet et aménagements intérieurs. La touche finale qui transforme un chantier en foyer.",
+      "imageUrl": ""
+    }
+  ],
+  "contact": {
+    "email": "contact@artisans-comores.com",
+    "responseTime": "1 semaine"
+  },
+  "media": {
+    "videoUrl": "",
+    "posterUrl": "",
+    "title": "Voyez nos chantiers en action",
+    "description": "Une courte présentation vidéo de nos équipes et de leurs réalisations aux Comores."
+  },
+  "gallery": [
+    { "id": "p1", "title": "Salle de bain complète", "category": "plomberie", "location": "Moroni", "description": "Installation complète : douche italienne, lavabo suspendu, WC et robinetterie chromée.", "imageUrl": "" },
+    { "id": "p2", "title": "Réseau eau courante", "category": "plomberie", "location": "Mitsamiouli", "description": "Mise en place du réseau d'alimentation en eau pour une villa de 250 m².", "imageUrl": "" },
+    { "id": "p3", "title": "Tableau électrique neuf", "category": "electricite", "location": "Moroni", "description": "Remplacement du tableau vétuste par un tableau 24 modules avec différentiels.", "imageUrl": "" },
+    { "id": "p4", "title": "Panneaux solaires", "category": "electricite", "location": "Domoni", "description": "Installation de 8 panneaux photovoltaïques + batteries pour autonomie complète.", "imageUrl": "" },
+    { "id": "p5", "title": "Fondations villa R+2", "category": "gros-oeuvre", "location": "Fomboni", "description": "Étude de sol et coulage des semelles filantes pour une construction de 180 m².", "imageUrl": "" },
+    { "id": "p6", "title": "Extension maison familiale", "category": "gros-oeuvre", "location": "Moroni", "description": "Ajout d'une chambre de 30 m² avec dalle, murs porteurs et toiture.", "imageUrl": "" },
+    { "id": "p7", "title": "Carrelage salon et terrasse", "category": "finition", "location": "Mitsamiouli", "description": "Pose de 90 m² de carrelage 60×60 grès cérame, joints époxy.", "imageUrl": "" },
+    { "id": "p8", "title": "Peinture intérieure villa", "category": "finition", "location": "Moroni", "description": "Enduit lissé et peinture velours pour 6 pièces, couleurs sable et blanc cassé.", "imageUrl": "" }
+  ]
+}

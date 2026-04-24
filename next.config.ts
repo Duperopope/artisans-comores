@@ -1,11 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  // output: "export" removed — the CMS dashboard requires server-side API routes.
+  // Deploy to Vercel (not GitHub Pages) to enable content editing at /dashboard.
   images: { unoptimized: true },
   reactStrictMode: true,
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH ?? "",
-  assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH ?? "",
 };
 
 export default nextConfig;

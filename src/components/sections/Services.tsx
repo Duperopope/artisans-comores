@@ -1,6 +1,11 @@
 import Animated from "@/components/ui/Animated";
+import type { ServiceItem } from "@/lib/cms";
 
-const services = [
+interface ServicesProps {
+  cms?: ServiceItem[];
+}
+
+const defaultServices = [
   {
     id: "plombier",
     title: "Plomberie",
@@ -68,7 +73,20 @@ const services = [
   },
 ];
 
-export default function Services() {
+export default function Services({ cms }: ServicesProps) {
+  // Merge CMS text into the services array (preserving icons/styles)
+  const merged = defaultServices.map((def) => {
+    const override = cms?.find((c) => c.id === def.id);
+    return override
+      ? {
+          ...def,
+          title: override.title,
+          description: override.description,
+          imageUrl: override.imageUrl?.trim() || undefined,
+        }
+      : { ...def, imageUrl: undefined as string | undefined };
+  });
+
   return (
     <section id="services" className="scroll-mt-16 section-padding bg-sand-50">
       <div className="container-custom">
@@ -79,7 +97,7 @@ export default function Services() {
               Nos expertises
             </span>
             <h2 className="section-heading mb-4">
-              Quatre corps de métier, une seule équipe
+              Des corps de métier complémentaires, une seule équipe
             </h2>
             <p className="text-neutral-500 font-inter leading-relaxed">
               Nos artisans couvrent l'ensemble des besoins d'un chantier de rénovation,
@@ -90,9 +108,20 @@ export default function Services() {
 
         {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((service, index) => (
+          {merged.map((service, index) => (
             <Animated key={service.id} delay={index * 0.1}>
               <article className="artisan-card p-6 flex flex-col gap-4 h-full">
+                {service.imageUrl ? (
+                  <div className="-mx-6 -mt-6 mb-2 aspect-[4/3] overflow-hidden rounded-t-[inherit]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={service.imageUrl}
+                      alt={`Illustration ${service.title}`}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : null}
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${service.accentClass}`}>
                   {service.icon}
                 </div>

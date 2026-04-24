@@ -164,7 +164,7 @@ export default async function ArtisanPage({ params }: Props) {
             Prêt à lancer votre projet ?
           </h2>
           <p className="text-white/65 font-inter mb-8">
-            {artisan.prenom} vous répond sous 48h avec un devis gratuit et sans engagement.
+            {artisan.prenom} vous répond sous 1 semaine avec un devis gratuit et sans engagement.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
