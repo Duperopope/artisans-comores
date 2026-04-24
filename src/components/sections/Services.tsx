@@ -1,6 +1,11 @@
 import Animated from "@/components/ui/Animated";
+import type { ServiceItem } from "@/lib/cms";
 
-const services = [
+interface ServicesProps {
+  cms?: ServiceItem[];
+}
+
+const defaultServices = [
   {
     id: "plombier",
     title: "Plomberie",
@@ -68,7 +73,15 @@ const services = [
   },
 ];
 
-export default function Services() {
+export default function Services({ cms }: ServicesProps) {
+  // Merge CMS text into the services array (preserving icons/styles)
+  const merged = defaultServices.map((def) => {
+    const override = cms?.find((c) => c.id === def.id);
+    return override
+      ? { ...def, title: override.title, description: override.description }
+      : def;
+  });
+
   return (
     <section id="services" className="scroll-mt-16 section-padding bg-sand-50">
       <div className="container-custom">
@@ -90,7 +103,7 @@ export default function Services() {
 
         {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((service, index) => (
+          {merged.map((service, index) => (
             <Animated key={service.id} delay={index * 0.1}>
               <article className="artisan-card p-6 flex flex-col gap-4 h-full">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${service.accentClass}`}>

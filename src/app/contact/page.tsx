@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Contact from "@/components/sections/Contact";
 import { artisans } from "@/lib/artisans";
+import { getCmsContent } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Contact & Devis — Artisans Comores",
@@ -9,9 +10,11 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
+  const cms = getCmsContent();
+
   return (
     <>
-      <Contact />
+      <Contact email={cms.contact.email} responseTime={cms.contact.responseTime} />
 
       {/* WhatsApp direct par artisan */}
       <section className="section-padding bg-sand-50">

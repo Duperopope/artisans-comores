@@ -1,0 +1,41 @@
+{
+  "hero": {
+    "badge": "Artisans qualifiés — Comores",
+    "title": "Vos travaux aux Comores,",
+    "titleHighlight": "réalisés par des mains de maître",
+    "description": "Nous connectons la diaspora comorienne en France avec quatre artisans expérimentés aux Comores. Plomberie, électricité, gros œuvre et finition — un seul interlocuteur, une confiance absolue.",
+    "ctaPrimary": "Obtenir un devis gratuit",
+    "ctaSecondary": "Nos services",
+    "stats": [
+      { "value": "4", "label": "Artisans experts" },
+      { "value": "48h", "label": "Pour votre devis" },
+      { "value": "100%", "label": "Qualité garantie" }
+    ]
+  },
+  "services": [
+    {
+      "id": "plombier",
+      "title": "Plomberie",
+      "description": "Installation et réparation de canalisations, sanitaires, chauffe-eau et systèmes d'alimentation en eau. Interventions rapides sur toute l'île."
+    },
+    {
+      "id": "electricien",
+      "title": "Électricité",
+      "description": "Mise aux normes, installation de tableaux électriques, câblage, prises et éclairage. Travaux sûrs et conformes aux standards en vigueur."
+    },
+    {
+      "id": "gros-oeuvre",
+      "title": "Gros œuvre",
+      "description": "Construction de fondations, murs porteurs, dalles et structure générale. Des bases solides pour toutes vos constructions et rénovations."
+    },
+    {
+      "id": "finition",
+      "title": "Finition",
+      "description": "Enduits, carrelage, peinture, pose de parquet et aménagements intérieurs. La touche finale qui transforme un chantier en foyer."
+    }
+  ],
+  "contact": {
+    "email": "contact@artisans-comores.com",
+    "responseTime": "48"
+  }
+}

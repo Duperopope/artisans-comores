@@ -3,6 +3,11 @@
 import { useState, type FormEvent } from "react";
 import Animated from "@/components/ui/Animated";
 
+interface ContactProps {
+  email?: string;
+  responseTime?: string;
+}
+
 const specialties = [
   { value: "", label: "Sélectionnez un service" },
   { value: "plomberie", label: "Plomberie" },
@@ -12,7 +17,9 @@ const specialties = [
   { value: "multiple", label: "Plusieurs services" },
 ];
 
-export default function Contact() {
+export default function Contact({ email, responseTime }: ContactProps) {
+  const contactEmail = email ?? "contact@artisans-comores.com";
+  const delai = responseTime ?? "48";
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -39,7 +46,7 @@ export default function Contact() {
               Parlons de votre projet
             </h2>
             <p className="text-white/65 font-inter leading-relaxed mb-10">
-              Décrivez-nous vos travaux. Nous vous répondons sous 48h avec un devis
+              Décrivez-nous vos travaux. Nous vous répondons sous {delai}h avec un devis
               clair et détaillé, sans engagement.
             </p>
 
@@ -51,7 +58,7 @@ export default function Contact() {
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
                   ),
-                  text: "Réponse garantie sous 48h",
+                  text: `Réponse garantie sous ${delai}h`,
                 },
                 {
                   icon: (
@@ -103,7 +110,12 @@ export default function Contact() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} noValidate className="space-y-5">
+              <form
+                onSubmit={handleSubmit}
+                noValidate
+                className="space-y-5"
+                data-recipient={contactEmail}
+              >
                 <h3 className="font-outfit font-bold text-ocean-900 text-xl mb-6">
                   Demande de devis
                 </h3>
