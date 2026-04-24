@@ -2,6 +2,21 @@
 
 import { useState, type FormEvent } from "react";
 import Animated from "@/components/ui/Animated";
+import { DEFAULT_CONTENT } from "@/lib/content";
+
+const c = DEFAULT_CONTENT.contact;
+
+const FEATURE_ICONS = [
+  <svg key="chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>,
+  <svg key="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>,
+  <svg key="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>,
+];
 
 const specialties = [
   { value: "", label: "Sélectionnez un service" },
@@ -19,7 +34,6 @@ export default function Contact() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    // Simulate async submission — replace with real API call
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
@@ -30,57 +44,29 @@ export default function Contact() {
     <section id="contact" className="scroll-mt-16 section-padding bg-ocean-950">
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* Left column — info */}
           <Animated direction="left" className="text-white">
             <span className="inline-block text-sm font-inter font-semibold text-terracotta-400 uppercase tracking-wider mb-3">
-              Contactez-nous
+              {c.sectionLabel}
             </span>
             <h2 className="font-outfit font-bold text-white mb-6" style={{ fontSize: "clamp(1.5rem, 3.5vw, 2.5rem)" }}>
-              Parlons de votre projet
+              {c.heading}
             </h2>
             <p className="text-white/65 font-inter leading-relaxed mb-10">
-              Décrivez-nous vos travaux. Nous vous répondons sous 48h avec un devis
-              clair et détaillé, sans engagement.
+              {c.subheading}
             </p>
 
             <ul className="space-y-5" role="list">
-              {[
-                {
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                  ),
-                  text: "Réponse garantie sous 48h",
-                },
-                {
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  ),
-                  text: "Devis gratuit et sans engagement",
-                },
-                {
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
-                  ),
-                  text: "Informations confidentielles et protégées",
-                },
-              ].map((item) => (
-                <li key={item.text} className="flex items-center gap-3 text-white/70 font-inter text-sm">
+              {c.features.map((text, i) => (
+                <li key={i} className="flex items-center gap-3 text-white/70 font-inter text-sm">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-terracotta-400">
-                    {item.icon}
+                    {FEATURE_ICONS[i % FEATURE_ICONS.length]}
                   </span>
-                  {item.text}
+                  {text}
                 </li>
               ))}
             </ul>
           </Animated>
 
-          {/* Right column — form */}
           <Animated direction="right" delay={0.1} className="bg-white rounded-3xl p-8 shadow-glass">
             {submitted ? (
               <div className="text-center py-8">
