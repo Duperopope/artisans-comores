@@ -2,14 +2,28 @@
 
 import { useEffect, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import type { CmsContent, HeroStat, ServiceItem } from "@/lib/cms";
+import type {
+  CmsContent,
+  HeroStat,
+  ServiceItem,
+  GalleryItem,
+} from "@/lib/cms";
 
-type Tab = "hero" | "services" | "contact";
+type Tab = "hero" | "services" | "media" | "gallery" | "contact";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "hero", label: "Accueil — Hero" },
   { id: "services", label: "Services" },
+  { id: "media", label: "Vidéo" },
+  { id: "gallery", label: "Galerie" },
   { id: "contact", label: "Contact" },
+];
+
+const GALLERY_CATEGORIES: GalleryItem["category"][] = [
+  "plomberie",
+  "electricite",
+  "gros-oeuvre",
+  "finition",
 ];
 
 const inputCls =
@@ -19,10 +33,12 @@ const textareaCls = `${inputCls} resize-none`;
 function Field({
   label,
   id,
+  hint,
   children,
 }: {
   label: string;
   id: string;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -34,6 +50,7 @@ function Field({
         {label}
       </label>
       {children}
+      {hint && <p className="mt-1 text-xs font-inter text-neutral-400">{hint}</p>}
     </div>
   );
 }
@@ -132,6 +149,49 @@ export default function DashboardPage() {
         ? { ...prev, contact: { ...prev.contact, [field]: value } }
         : prev
     );
+  }
+
+  function updateMedia(field: keyof CmsContent["media"], value: string) {
+    setContent((prev) =>
+      prev ? { ...prev, media: { ...prev.media, [field]: value } } : prev
+    );
+  }
+
+  function updateGalleryItem(
+    idx: number,
+    field: keyof GalleryItem,
+    value: string
+  ) {
+    setContent((prev) => {
+      if (!prev) return prev;
+      const gallery = prev.gallery.map((g, i) =>
+        i === idx ? { ...g, [field]: value } : g
+      );
+      return { ...prev, gallery };
+    });
+  }
+
+  function addGalleryItem() {
+    setContent((prev) => {
+      if (!prev) return prev;
+      const id = `p${Date.now()}`;
+      const next: GalleryItem = {
+        id,
+        title: "Nouveau projet",
+        category: "finition",
+        location: "",
+        description: "",
+        imageUrl: "",
+      };
+      return { ...prev, gallery: [...prev.gallery, next] };
+    });
+  }
+
+  function removeGalleryItem(idx: number) {
+    setContent((prev) => {
+      if (!prev) return prev;
+      return { ...prev, gallery: prev.gallery.filter((_, i) => i !== idx) };
+    });
   }
 
   if (!content) {
@@ -294,6 +354,32 @@ export default function DashboardPage() {
                   </Field>
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-4">
+                  <Field
+                    label="Image du Hero (URL)"
+                    id="hero-image"
+                    hint="Laisser vide pour masquer l'image. URL vers Unsplash, Vercel Blob ou /photos/..."
+                  >
+                    <input
+                      id="hero-image"
+                      type="url"
+                      className={inputCls}
+                      value={content.hero.imageUrl ?? ""}
+                      onChange={(e) => updateHero("imageUrl", e.target.value)}
+                      placeholder="https://…"
+                    />
+                  </Field>
+                  <Field label="Texte alternatif" id="hero-image-alt">
+                    <input
+                      id="hero-image-alt"
+                      type="text"
+                      className={inputCls}
+                      value={content.hero.imageAlt ?? ""}
+                      onChange={(e) => updateHero("imageAlt", e.target.value)}
+                    />
+                  </Field>
+                </div>
+
                 <div>
                   <p className="text-sm font-inter font-medium text-ocean-900 mb-3">
                     Chiffres clés (3 statistiques)
@@ -340,8 +426,8 @@ export default function DashboardPage() {
                   Nos spécialités
                 </h2>
                 <p className="text-sm text-neutral-500 font-inter -mt-2">
-                  Les icônes sont fixes. Seuls le titre et la description sont
-                  éditables.
+                  Les icônes sont fixes. Ajoutez une image illustrative si
+                  souhaité (URL publique).
                 </p>
                 <div className="space-y-4">
                   {content.services.map((service, idx) => (
@@ -374,8 +460,200 @@ export default function DashboardPage() {
                           }
                         />
                       </Field>
+                      <Field
+                        label="Image (URL) — optionnelle"
+                        id={`service-img-${idx}`}
+                      >
+                        <input
+                          id={`service-img-${idx}`}
+                          type="url"
+                          className={inputCls}
+                          value={service.imageUrl ?? ""}
+                          onChange={(e) =>
+                            updateService(idx, "imageUrl", e.target.value)
+                          }
+                          placeholder="https://…"
+                        />
+                      </Field>
                     </div>
                   ))}
+                </div>
+              </>
+            )}
+
+            {/* ── MEDIA / VIDEO ── */}
+            {activeTab === "media" && (
+              <>
+                <h2 className="font-outfit font-semibold text-ocean-900 text-lg border-b border-neutral-100 pb-3">
+                  Section Vidéo
+                </h2>
+                <p className="text-sm text-neutral-500 font-inter -mt-2">
+                  Ajoutez un lien YouTube, Vimeo ou un fichier MP4. Laissez vide
+                  pour masquer la section vidéo.
+                </p>
+                <Field
+                  label="URL de la vidéo"
+                  id="media-video"
+                  hint="Ex : https://www.youtube.com/watch?v=…, https://vimeo.com/… ou https://…/film.mp4"
+                >
+                  <input
+                    id="media-video"
+                    type="url"
+                    className={inputCls}
+                    value={content.media.videoUrl ?? ""}
+                    onChange={(e) => updateMedia("videoUrl", e.target.value)}
+                    placeholder="https://…"
+                  />
+                </Field>
+                <Field
+                  label="Image de prévisualisation (poster) — URL"
+                  id="media-poster"
+                  hint="Utilisée uniquement pour les vidéos MP4 hébergées."
+                >
+                  <input
+                    id="media-poster"
+                    type="url"
+                    className={inputCls}
+                    value={content.media.posterUrl ?? ""}
+                    onChange={(e) => updateMedia("posterUrl", e.target.value)}
+                    placeholder="https://…"
+                  />
+                </Field>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Titre de la section" id="media-title">
+                    <input
+                      id="media-title"
+                      type="text"
+                      className={inputCls}
+                      value={content.media.title ?? ""}
+                      onChange={(e) => updateMedia("title", e.target.value)}
+                    />
+                  </Field>
+                  <Field label="Description" id="media-desc">
+                    <input
+                      id="media-desc"
+                      type="text"
+                      className={inputCls}
+                      value={content.media.description ?? ""}
+                      onChange={(e) =>
+                        updateMedia("description", e.target.value)
+                      }
+                    />
+                  </Field>
+                </div>
+              </>
+            )}
+
+            {/* ── GALLERY ── */}
+            {activeTab === "gallery" && (
+              <>
+                <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                  <h2 className="font-outfit font-semibold text-ocean-900 text-lg">
+                    Galerie de réalisations
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={addGalleryItem}
+                    className="btn-ghost text-sm"
+                  >
+                    + Ajouter un projet
+                  </button>
+                </div>
+                <p className="text-sm text-neutral-500 font-inter -mt-2">
+                  Gérez les projets affichés sur la page{" "}
+                  <code className="font-mono text-xs bg-neutral-50 px-1 rounded">
+                    /galerie
+                  </code>
+                  .
+                </p>
+                <div className="space-y-4">
+                  {content.gallery.map((item, idx) => (
+                    <div
+                      key={item.id}
+                      className="p-4 bg-neutral-50 rounded-xl space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-inter font-semibold text-neutral-400 uppercase tracking-wider">
+                          {item.id}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => removeGalleryItem(idx)}
+                          className="text-xs font-inter text-red-600 hover:underline"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <Field label="Titre" id={`g-title-${idx}`}>
+                          <input
+                            id={`g-title-${idx}`}
+                            type="text"
+                            className={inputCls}
+                            value={item.title}
+                            onChange={(e) =>
+                              updateGalleryItem(idx, "title", e.target.value)
+                            }
+                          />
+                        </Field>
+                        <Field label="Lieu" id={`g-loc-${idx}`}>
+                          <input
+                            id={`g-loc-${idx}`}
+                            type="text"
+                            className={inputCls}
+                            value={item.location}
+                            onChange={(e) =>
+                              updateGalleryItem(idx, "location", e.target.value)
+                            }
+                          />
+                        </Field>
+                      </div>
+                      <Field label="Catégorie" id={`g-cat-${idx}`}>
+                        <select
+                          id={`g-cat-${idx}`}
+                          className={inputCls}
+                          value={item.category}
+                          onChange={(e) =>
+                            updateGalleryItem(idx, "category", e.target.value)
+                          }
+                        >
+                          {GALLERY_CATEGORIES.map((c) => (
+                            <option key={c} value={c}>
+                              {c}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                      <Field label="Description" id={`g-desc-${idx}`}>
+                        <textarea
+                          id={`g-desc-${idx}`}
+                          rows={2}
+                          className={textareaCls}
+                          value={item.description}
+                          onChange={(e) =>
+                            updateGalleryItem(idx, "description", e.target.value)
+                          }
+                        />
+                      </Field>
+                      <Field label="Image (URL)" id={`g-img-${idx}`}>
+                        <input
+                          id={`g-img-${idx}`}
+                          type="url"
+                          className={inputCls}
+                          value={item.imageUrl ?? ""}
+                          onChange={(e) =>
+                            updateGalleryItem(idx, "imageUrl", e.target.value)
+                          }
+                          placeholder="https://…"
+                        />
+                      </Field>
+                    </div>
+                  ))}
+                  {content.gallery.length === 0 && (
+                    <p className="text-sm text-neutral-400 font-inter italic text-center py-6">
+                      Aucun projet. Cliquez sur « Ajouter un projet ».
+                    </p>
+                  )}
                 </div>
               </>
             )}
@@ -398,7 +676,11 @@ export default function DashboardPage() {
                       }
                     />
                   </Field>
-                  <Field label="Délai de réponse (heures)" id="contact-time">
+                  <Field
+                    label="Délai de réponse"
+                    id="contact-time"
+                    hint="Texte libre, ex : « 1 semaine », « 48h », « 3 jours »"
+                  >
                     <input
                       id="contact-time"
                       type="text"

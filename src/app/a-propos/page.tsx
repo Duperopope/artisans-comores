@@ -5,7 +5,7 @@ import { artisans } from "@/lib/artisans";
 export const metadata: Metadata = {
   title: "À propos — Artisans Comores",
   description:
-    "Découvrez l'histoire d'Artisans Comores : un collectif de quatre artisans expérimentés aux Comores, au service de la diaspora comorienne en France.",
+    "Découvrez l'histoire d'Artisans Comores : un collectif d'artisans expérimentés aux Comores, au service de la diaspora comorienne en France.",
 };
 
 const engagements = [
@@ -68,7 +68,7 @@ export default function AProposPage() {
                 à distance ?
               </p>
               <p>
-                La réponse était là : un réseau de quatre artisans que nous connaissions
+                La réponse était là : un réseau d'artisans que nous connaissions
                 personnellement, liés par des années d'amitié et un code professionnel commun.
                 Nous avons formalisé ce collectif, structuré notre façon de travailler,
                 et créé Artisans Comores.
@@ -144,7 +144,7 @@ export default function AProposPage() {
             Discutons de votre projet
           </h2>
           <p className="text-white/65 font-inter mb-8">
-            Un devis gratuit, une réponse sous 48h. Sans engagement.
+            Un devis gratuit, une réponse sous 1 semaine. Sans engagement.
           </p>
           <Link href="/contact" className="btn-primary bg-terracotta-600 hover:bg-terracotta-700">
             Nous contacter

@@ -11,7 +11,7 @@ const trustPoints = [
     ),
     title: "Un réseau de confiance",
     description:
-      "Nos quatre artisans sont sélectionnés pour leur expertise et leur sérieux. Chaque chantier est suivi de près.",
+      "Nos artisans sont sélectionnés pour leur expertise et leur sérieux. Chaque chantier est suivi de près.",
   },
   {
     icon: (
@@ -31,7 +31,7 @@ const trustPoints = [
     ),
     title: "Devis transparent",
     description:
-      "Recevez un devis détaillé sous 48h. Prix clairs, sans mauvaises surprises.",
+      "Recevez un devis détaillé sous 1 semaine. Prix clairs, sans mauvaises surprises.",
   },
   {
     icon: (
@@ -66,10 +66,9 @@ export default function About() {
                   Artisans Comores est né pour changer ça.
                 </p>
                 <p>
-                  Nous avons réuni quatre artisans expérimentés — un plombier, un électricien,
-                  un spécialiste du gros œuvre et un expert en finition — unis par un même
-                  engagement : livrer un travail de qualité, dans les délais convenus,
-                  à un prix juste.
+                  Nous avons réuni des artisans expérimentés — plomberie, électricité,
+                  gros œuvre et finition — unis par un même engagement : livrer un travail
+                  de qualité, dans les délais convenus, à un prix juste.
                 </p>
                 <p>
                   Vous êtes en France, votre maison est aux Comores. Nous faisons le lien,

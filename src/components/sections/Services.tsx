@@ -78,8 +78,13 @@ export default function Services({ cms }: ServicesProps) {
   const merged = defaultServices.map((def) => {
     const override = cms?.find((c) => c.id === def.id);
     return override
-      ? { ...def, title: override.title, description: override.description }
-      : def;
+      ? {
+          ...def,
+          title: override.title,
+          description: override.description,
+          imageUrl: override.imageUrl?.trim() || undefined,
+        }
+      : { ...def, imageUrl: undefined as string | undefined };
   });
 
   return (
@@ -92,7 +97,7 @@ export default function Services({ cms }: ServicesProps) {
               Nos expertises
             </span>
             <h2 className="section-heading mb-4">
-              Quatre corps de métier, une seule équipe
+              Des corps de métier complémentaires, une seule équipe
             </h2>
             <p className="text-neutral-500 font-inter leading-relaxed">
               Nos artisans couvrent l'ensemble des besoins d'un chantier de rénovation,
@@ -106,6 +111,17 @@ export default function Services({ cms }: ServicesProps) {
           {merged.map((service, index) => (
             <Animated key={service.id} delay={index * 0.1}>
               <article className="artisan-card p-6 flex flex-col gap-4 h-full">
+                {service.imageUrl ? (
+                  <div className="-mx-6 -mt-6 mb-2 aspect-[4/3] overflow-hidden rounded-t-[inherit]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={service.imageUrl}
+                      alt={`Illustration ${service.title}`}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : null}
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${service.accentClass}`}>
                   {service.icon}
                 </div>

@@ -19,7 +19,7 @@ const specialties = [
 
 export default function Contact({ email, responseTime }: ContactProps) {
   const contactEmail = email ?? "contact@artisans-comores.com";
-  const delai = responseTime ?? "48";
+  const delai = responseTime ?? "1 semaine";
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +46,7 @@ export default function Contact({ email, responseTime }: ContactProps) {
               Parlons de votre projet
             </h2>
             <p className="text-white/65 font-inter leading-relaxed mb-10">
-              Décrivez-nous vos travaux. Nous vous répondons sous {delai}h avec un devis
+              Décrivez-nous vos travaux. Nous vous répondons sous {delai} avec un devis
               clair et détaillé, sans engagement.
             </p>
 
@@ -58,7 +58,7 @@ export default function Contact({ email, responseTime }: ContactProps) {
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
                   ),
-                  text: `Réponse garantie sous ${delai}h`,
+                  text: `Réponse garantie sous ${delai}`,
                 },
                 {
                   icon: (
@@ -100,7 +100,7 @@ export default function Contact({ email, responseTime }: ContactProps) {
                   Message envoyé !
                 </h3>
                 <p className="text-neutral-500 font-inter text-sm">
-                  Merci pour votre demande. Nous vous répondrons dans les 48h.
+                  Merci pour votre demande. Nous vous répondrons sous {delai}.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}

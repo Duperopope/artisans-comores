@@ -81,7 +81,7 @@ export default function ArtisanPage({
             </div>
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-2">Délai de réponse</p>
-              <p className="text-gray-900">Sous 48h ouvrées</p>
+              <p className="text-gray-900">Sous 1 semaine</p>
             </div>
             <div className="pt-4 border-t border-gray-100">
               <Link href="/contact" className="btn-primary w-full text-center mb-3">

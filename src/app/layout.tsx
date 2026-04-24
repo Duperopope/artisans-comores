@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://artisans-comores.com"),
   title: "Artisans Comores — Travaux de rénovation aux Comores",
   description:
-    "Connectez-vous avec des artisans qualifiés aux Comores pour vos projets de rénovation. Plomberie, électricité, gros œuvre et finition. Devis gratuit en 48h.",
+    "Connectez-vous avec des artisans qualifiés aux Comores pour vos projets de rénovation. Plomberie, électricité, gros œuvre et finition. Devis gratuit sous 1 semaine.",
   openGraph: {
     title: "Artisans Comores",
     description:
@@ -51,7 +51,7 @@ const jsonLd = {
       name: "Artisans Comores",
       url: "https://artisans-comores.com",
       description:
-        "Collectif de quatre artisans qualifiés aux Comores — plomberie, électricité, gros œuvre et finition — au service de la diaspora comorienne en France.",
+        "Collectif d'artisans qualifiés aux Comores — plomberie, électricité, gros œuvre et finition — au service de la diaspora comorienne en France.",
       areaServed: { "@type": "Country", name: "Comoros" },
       knowsAbout: ["Plomberie", "Électricité", "Gros œuvre", "Finition"],
     },
@@ -61,7 +61,7 @@ const jsonLd = {
       name: "Artisans Comores",
       url: "https://artisans-comores.com",
       description:
-        "Artisans qualifiés aux Comores pour vos projets de rénovation : plomberie, électricité, gros œuvre et finition. Devis gratuit en 48h.",
+        "Artisans qualifiés aux Comores pour vos projets de rénovation : plomberie, électricité, gros œuvre et finition. Devis gratuit sous 1 semaine.",
       address: {
         "@type": "PostalAddress",
         addressCountry: "KM",

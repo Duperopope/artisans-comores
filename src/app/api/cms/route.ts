@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
 
   revalidatePath("/");
   revalidatePath("/contact");
+  revalidatePath("/galerie");
 
   return NextResponse.json({ ok: true });
 }

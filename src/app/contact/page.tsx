@@ -6,7 +6,7 @@ import { getCmsContent } from "@/lib/cms";
 export const metadata: Metadata = {
   title: "Contact & Devis — Artisans Comores",
   description:
-    "Demandez un devis gratuit pour vos travaux aux Comores. Réponse sous 48h. Contactez aussi nos artisans directement par WhatsApp.",
+    "Demandez un devis gratuit pour vos travaux aux Comores. Réponse sous 1 semaine. Contactez aussi nos artisans directement par WhatsApp.",
 };
 
 export default function ContactPage() {
