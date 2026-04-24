@@ -4,8 +4,8 @@ import About from "@/components/sections/About";
 import Contact from "@/components/sections/Contact";
 import { getCmsContent } from "@/lib/cms";
 
-export default function HomePage() {
-  const cms = getCmsContent();
+export default async function HomePage() {
+  const cms = await getCmsContent();
 
   return (
     <>

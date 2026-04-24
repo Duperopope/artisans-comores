@@ -9,8 +9,8 @@ export const metadata: Metadata = {
     "Demandez un devis gratuit pour vos travaux aux Comores. Réponse sous 48h. Contactez aussi nos artisans directement par WhatsApp.",
 };
 
-export default function ContactPage() {
-  const cms = getCmsContent();
+export default async function ContactPage() {
+  const cms = await getCmsContent();
 
   return (
     <>

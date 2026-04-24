@@ -5,7 +5,7 @@ import { getCmsContent, saveCmsContent, type CmsContent } from "@/lib/cms";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth";
 
 export async function GET() {
-  const content = getCmsContent();
+  const content = await getCmsContent();
   return NextResponse.json(content);
 }
 
@@ -24,13 +24,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    saveCmsContent(body);
+    await saveCmsContent(body);
   } catch {
     return NextResponse.json(
-      {
-        error:
-          "Failed to save content. On Vercel, the filesystem is read-only — a database adapter is required for production.",
-      },
+      { error: "Failed to save content." },
       { status: 500 }
     );
   }
