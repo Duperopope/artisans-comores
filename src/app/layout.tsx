@@ -3,6 +3,7 @@ import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { ContentProvider } from "@/components/ContentProvider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -110,9 +111,11 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Passer au contenu principal
         </a>
-        <Navbar />
-        <main id="main-content">{children}</main>
-        <Footer />
+        <ContentProvider>
+          <Navbar />
+          <main id="main-content">{children}</main>
+          <Footer />
+        </ContentProvider>
       </body>
     </html>
   );

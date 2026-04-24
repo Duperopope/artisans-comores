@@ -2,9 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Animated from "@/components/ui/Animated";
-import { DEFAULT_CONTENT } from "@/lib/content";
-
-const c = DEFAULT_CONTENT.contact;
+import { useContent } from "@/components/ContentProvider";
 
 const FEATURE_ICONS = [
   <svg key="chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
@@ -30,6 +28,7 @@ const specialties = [
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const c = useContent().contact;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
