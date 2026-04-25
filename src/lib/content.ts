@@ -37,6 +37,29 @@ export const DEFAULT_CONTENT: SiteContent = defaultContent as SiteContent;
 export const CMS_TABLE = "cms_content";
 export const CMS_ROW_ID = "singleton";
 
+function mergeWithDefaults(remote: Record<string, unknown>): SiteContent {
+  const r = remote as Partial<SiteContent>;
+  return {
+    hero: {
+      ...DEFAULT_CONTENT.hero,
+      ...(r.hero ?? {}),
+      stats: Array.isArray(r.hero?.stats) && r.hero.stats.length > 0
+        ? r.hero.stats
+        : DEFAULT_CONTENT.hero.stats,
+    },
+    services: Array.isArray(r.services) && r.services.length > 0
+      ? r.services
+      : DEFAULT_CONTENT.services,
+    contact: {
+      ...DEFAULT_CONTENT.contact,
+      ...(r.contact ?? {}),
+      features: Array.isArray(r.contact?.features) && r.contact.features.length > 0
+        ? r.contact.features
+        : DEFAULT_CONTENT.contact.features,
+    },
+  };
+}
+
 export async function fetchRemoteContent(): Promise<SiteContent | null> {
   try {
     const { data, error } = await getSupabase()
@@ -46,7 +69,7 @@ export async function fetchRemoteContent(): Promise<SiteContent | null> {
       .maybeSingle();
 
     if (error || !data?.content) return null;
-    return data.content as SiteContent;
+    return mergeWithDefaults(data.content as Record<string, unknown>);
   } catch {
     return null;
   }
