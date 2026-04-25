@@ -18,41 +18,35 @@ export default function Hero() {
 
       <div className="container-custom relative py-24 lg:py-36">
         <div className="max-w-3xl">
-          <Animated delay={0}>
-            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-2 mb-8">
-              <span className="w-2 h-2 bg-tropical-500 rounded-full animate-pulse" aria-hidden="true" />
-              <span className="text-sm font-inter text-white/90">{c.badge}</span>
-            </div>
-          </Animated>
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-2 mb-8">
+            <span className="w-2 h-2 bg-tropical-500 rounded-full animate-pulse" aria-hidden="true" />
+            <span className="text-sm font-inter text-white/90">{c.badge}</span>
+          </div>
 
-          <Animated delay={0.1}>
-            <h1 className="font-outfit font-bold text-white mb-6 leading-tight">
-              {c.headline}{" "}
-              <span className="text-terracotta-400">{c.headlineAccent}</span>
-            </h1>
-            <p className="text-lg text-white/75 font-inter leading-relaxed mb-10 max-w-2xl">
-              {c.subheadline}
-            </p>
-          </Animated>
+          <h1 className="font-outfit font-bold text-white mb-6 leading-tight">
+            {c.headline}{" "}
+            <span className="text-terracotta-400">{c.headlineAccent}</span>
+          </h1>
+          <p className="text-lg text-white/75 font-inter leading-relaxed mb-10 max-w-2xl">
+            {c.subheadline}
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <a
+              href="#contact"
+              className="btn-primary bg-terracotta-600 hover:bg-terracotta-700 focus-visible:ring-terracotta-400 text-base px-8 py-3"
+            >
+              {c.cta1Text}
+            </a>
+            <a
+              href="#services"
+              className="btn-secondary border-white/30 text-white hover:bg-white/10 hover:border-white/50 focus-visible:ring-white text-base px-8 py-3"
+            >
+              {c.cta2Text}
+            </a>
+          </div>
 
           <Animated delay={0.2}>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="#contact"
-                className="btn-primary bg-terracotta-600 hover:bg-terracotta-700 focus-visible:ring-terracotta-400 text-base px-8 py-3"
-              >
-                {c.cta1Text}
-              </a>
-              <a
-                href="#services"
-                className="btn-secondary border-white/30 text-white hover:bg-white/10 hover:border-white/50 focus-visible:ring-white text-base px-8 py-3"
-              >
-                {c.cta2Text}
-              </a>
-            </div>
-          </Animated>
-
-          <Animated delay={0.3}>
             <div
               className="mt-16 pt-8 border-t border-white/15 grid grid-cols-3 gap-6 max-w-sm"
               aria-label="Chiffres clés"
