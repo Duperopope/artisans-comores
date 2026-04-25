@@ -1,9 +1,10 @@
-import Animated from "@/components/ui/Animated";
-import { DEFAULT_CONTENT } from "@/lib/content";
+"use client";
 
-const c = DEFAULT_CONTENT.hero;
+import Animated from "@/components/ui/Animated";
+import { useContent } from "@/components/ContentProvider";
 
 export default function Hero() {
+  const c = useContent().hero;
   return (
     <section
       className="relative overflow-hidden bg-ocean-950 text-white"

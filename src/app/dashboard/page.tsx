@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   DEFAULT_CONTENT,
-  STORAGE_KEY,
+  fetchRemoteContent,
+  saveRemoteContent,
   type SiteContent,
   type ServiceContent,
 } from "@/lib/content";
@@ -238,46 +239,43 @@ function ContactTab({
 
 // ─── Main CMS dashboard ───────────────────────────────────────────────────────
 
+type SaveState = "idle" | "saving" | "saved" | "error";
+
 function CmsDashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("hero");
   const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
-  const [saved, setSaved] = useState(false);
-  const [hasDraft, setHasDraft] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState<string>("");
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        setContent(JSON.parse(raw) as SiteContent);
-        setHasDraft(true);
-      }
-    } catch {
-      // localStorage unavailable
-    }
+    let cancelled = false;
+    fetchRemoteContent().then((remote) => {
+      if (cancelled) return;
+      if (remote) setContent(remote);
+      setHydrated(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const saveDraft = useCallback(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
-    setHasDraft(true);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const publish = useCallback(async () => {
+    setSaveState("saving");
+    setSaveError("");
+    try {
+      await saveRemoteContent(content);
+      setSaveState("saved");
+      setTimeout(() => setSaveState("idle"), 2500);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Erreur inconnue");
+      setSaveState("error");
+    }
   }, [content]);
 
-  function exportJson() {
-    const blob = new Blob([JSON.stringify(content, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "content.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  function resetToDefaults() {
-    if (!confirm("Réinitialiser au contenu par défaut ? Le brouillon local sera effacé.")) return;
-    localStorage.removeItem(STORAGE_KEY);
+  async function resetToDefaults() {
+    if (!confirm("Réinitialiser au contenu par défaut ? Les changements publiés seront écrasés lors de la prochaine sauvegarde.")) return;
     setContent(DEFAULT_CONTENT);
-    setHasDraft(false);
   }
 
   const TABS: { id: Tab; label: string }[] = [
@@ -285,6 +283,18 @@ function CmsDashboard({ onLogout }: { onLogout: () => void }) {
     { id: "services", label: "Services" },
     { id: "contact", label: "Contact" },
   ];
+
+  if (!hydrated) {
+    return (
+      <div className="min-h-screen bg-sand-50 flex items-center justify-center">
+        <div
+          className="w-6 h-6 border-2 border-ocean-400 border-t-transparent rounded-full animate-spin"
+          aria-label="Chargement du contenu…"
+          role="status"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-sand-50 font-inter">
@@ -297,11 +307,6 @@ function CmsDashboard({ onLogout }: { onLogout: () => void }) {
           </div>
           <div>
             <span className="font-outfit font-semibold text-sm">CMS — Artisans Comores</span>
-            {hasDraft && (
-              <span className="ml-2 text-xs bg-terracotta-600/30 text-terracotta-300 px-2 py-0.5 rounded-full">
-                Brouillon local actif
-              </span>
-            )}
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -324,10 +329,9 @@ function CmsDashboard({ onLogout }: { onLogout: () => void }) {
 
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="mb-6 bg-ocean-50 border border-ocean-200 rounded-xl p-4 text-sm text-ocean-800 font-inter">
-          <strong>Comment ça fonctionne :</strong> Modifiez le contenu ci-dessous, cliquez{" "}
-          <em>Sauvegarder le brouillon</em> pour prévisualiser dans votre navigateur.
-          Pour rendre les changements permanents, utilisez <em>Exporter content.json</em>{" "}
-          et transmettez le fichier à votre développeur pour intégration.
+          <strong>Comment ça fonctionne :</strong> Modifiez le contenu ci-dessous,
+          puis cliquez <em>Publier</em>. Les modifications sont enregistrées dans la base
+          Supabase et visibles immédiatement pour tous les visiteurs du site.
         </div>
 
         <div className="flex gap-1 bg-white border border-sand-200 rounded-xl p-1 mb-6">
@@ -368,42 +372,49 @@ function CmsDashboard({ onLogout }: { onLogout: () => void }) {
         </div>
 
         <div className="mt-6 flex flex-col sm:flex-row gap-3">
-          <button onClick={saveDraft} className="btn-primary flex-1 justify-center">
-            {saved ? (
+          <button
+            onClick={publish}
+            disabled={saveState === "saving"}
+            className="btn-primary flex-1 justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+            aria-busy={saveState === "saving"}
+          >
+            {saveState === "saving" && (
+              <>
+                <span className="w-4 h-4 border-2 border-white/60 border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                Publication…
+              </>
+            )}
+            {saveState === "saved" && (
               <>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                Sauvegardé !
-              </>
-            ) : (
-              <>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
-                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                  <polyline points="17 21 17 13 7 13 7 21" />
-                  <polyline points="7 3 7 8 15 8" />
-                </svg>
-                Sauvegarder le brouillon
+                Publié !
               </>
             )}
-          </button>
-
-          <button onClick={exportJson} className="btn-secondary flex-1 justify-center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            Exporter content.json
+            {(saveState === "idle" || saveState === "error") && (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+                Publier
+              </>
+            )}
           </button>
 
           <button
             onClick={resetToDefaults}
             className="btn-ghost text-sm text-neutral-500 hover:text-red-600"
           >
-            Réinitialiser
+            Réinitialiser (défaut)
           </button>
         </div>
+
+        {saveState === "error" && (
+          <p role="alert" className="mt-3 text-sm text-red-600 font-inter">
+            Échec de la publication : {saveError}
+          </p>
+        )}
       </div>
     </div>
   );

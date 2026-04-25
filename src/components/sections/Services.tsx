@@ -1,5 +1,7 @@
+"use client";
+
 import Animated from "@/components/ui/Animated";
-import { DEFAULT_CONTENT } from "@/lib/content";
+import { useContent } from "@/components/ContentProvider";
 
 const SERVICE_META: Record<string, {
   icon: React.ReactNode;
@@ -54,7 +56,7 @@ const SERVICE_META: Record<string, {
 };
 
 export default function Services() {
-  const services = DEFAULT_CONTENT.services;
+  const services = useContent().services;
 
   return (
     <section id="services" className="scroll-mt-16 section-padding bg-sand-50">

@@ -1,4 +1,5 @@
 import defaultContent from "@/data/content.json";
+import { getSupabase } from "@/lib/supabase";
 
 export type Stat = { value: string; label: string };
 
@@ -31,17 +32,34 @@ export type SiteContent = {
   contact: ContactContent;
 };
 
-export const STORAGE_KEY = "ac-cms-draft";
-
 export const DEFAULT_CONTENT: SiteContent = defaultContent as SiteContent;
 
-export function loadContent(): SiteContent {
-  if (typeof window === "undefined") return DEFAULT_CONTENT;
+export const CMS_TABLE = "cms_content";
+export const CMS_ROW_ID = "singleton";
+
+export async function fetchRemoteContent(): Promise<SiteContent | null> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_CONTENT;
-    return JSON.parse(raw) as SiteContent;
+    const { data, error } = await getSupabase()
+      .from(CMS_TABLE)
+      .select("content")
+      .eq("id", CMS_ROW_ID)
+      .maybeSingle();
+
+    if (error || !data?.content) return null;
+    return data.content as SiteContent;
   } catch {
-    return DEFAULT_CONTENT;
+    return null;
   }
+}
+
+export async function saveRemoteContent(content: SiteContent): Promise<void> {
+  const supabase = getSupabase();
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData.user?.id ?? null;
+
+  const { error } = await supabase
+    .from(CMS_TABLE)
+    .upsert({ id: CMS_ROW_ID, content, updated_by: userId }, { onConflict: "id" });
+
+  if (error) throw error;
 }
