@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 
+const PLATFORM_URL = process.env.NEXT_PUBLIC_PLATFORM_URL ?? "https://kairosforge-platform.vercel.app";
+
 const navLinks = [
   { href: "/#services", label: "Nos services" },
   { href: "/galerie", label: "Galerie" },
@@ -38,7 +40,7 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-3">
           <Link
-            href="/dashboard"
+            href={`${PLATFORM_URL}/login`}
             className="font-inter text-sm font-medium text-ocean-600 hover:text-ocean-800 transition-colors inline-flex items-center gap-1.5 py-1"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -92,7 +94,7 @@ export default function Navbar() {
             ))}
             <li className="pt-2 flex flex-col gap-2">
               <Link
-                href="/dashboard"
+                href={`${PLATFORM_URL}/login`}
                 className="flex items-center justify-center gap-2 text-sm font-medium text-ocean-600 border border-ocean-200 rounded-xl py-2.5 hover:bg-ocean-50 transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
