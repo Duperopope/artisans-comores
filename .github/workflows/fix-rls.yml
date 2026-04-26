@@ -1,0 +1,217 @@
+name: Fix RLS recursion (one-time)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fix:
+    name: Fix org_members RLS infinite recursion
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply RLS fix via Management API
+        env:
+          ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          cat > /tmp/fix.sql << 'SQLEOF'
+          -- Helper function to check org membership without triggering RLS
+          CREATE OR REPLACE FUNCTION is_org_admin(check_org_id UUID)
+          RETURNS BOOLEAN
+          LANGUAGE sql
+          SECURITY DEFINER
+          STABLE
+          SET search_path = ''
+          AS $$
+            SELECT EXISTS (
+              SELECT 1 FROM public.org_members
+              WHERE org_id = check_org_id
+              AND profile_id = auth.uid()
+              AND role = 'org_admin'
+            );
+          $$;
+
+          CREATE OR REPLACE FUNCTION is_org_member(check_org_id UUID)
+          RETURNS BOOLEAN
+          LANGUAGE sql
+          SECURITY DEFINER
+          STABLE
+          SET search_path = ''
+          AS $$
+            SELECT EXISTS (
+              SELECT 1 FROM public.org_members
+              WHERE org_id = check_org_id
+              AND profile_id = auth.uid()
+            );
+          $$;
+
+          CREATE OR REPLACE FUNCTION get_user_org_role(check_org_id UUID)
+          RETURNS TEXT
+          LANGUAGE sql
+          SECURITY DEFINER
+          STABLE
+          SET search_path = ''
+          AS $$
+            SELECT role FROM public.org_members
+            WHERE org_id = check_org_id
+            AND profile_id = auth.uid()
+            LIMIT 1;
+          $$;
+
+          -- Fix org_members policies
+          DROP POLICY IF EXISTS "org_members_read_own" ON org_members;
+          CREATE POLICY "org_members_read_own" ON org_members
+            FOR SELECT USING (
+              profile_id = auth.uid() OR is_org_admin(org_id)
+            );
+
+          DROP POLICY IF EXISTS "org_admins_manage_members" ON org_members;
+          CREATE POLICY "org_admins_manage_members" ON org_members
+            FOR ALL USING (is_org_admin(org_id));
+
+          -- Fix organizations policies that reference org_members
+          DROP POLICY IF EXISTS "org_members_read_org" ON organizations;
+          CREATE POLICY "org_members_read_org" ON organizations
+            FOR SELECT USING (is_org_member(id));
+
+          DROP POLICY IF EXISTS "org_admins_manage_org" ON organizations;
+          CREATE POLICY "org_admins_manage_org" ON organizations
+            FOR ALL USING (owner_id = auth.uid() OR is_org_admin(id));
+
+          -- Fix sites policies
+          DROP POLICY IF EXISTS "org_members_read_sites" ON sites;
+          CREATE POLICY "org_members_read_sites" ON sites
+            FOR SELECT USING (is_org_member(org_id));
+
+          DROP POLICY IF EXISTS "site_admins_manage_sites" ON sites;
+          CREATE POLICY "site_admins_manage_sites" ON sites
+            FOR ALL USING (
+              get_user_org_role(org_id) IN ('org_admin', 'site_admin')
+            );
+
+          -- Fix profiles policy that references org_members
+          DROP POLICY IF EXISTS "org_admins_read_members" ON profiles;
+          CREATE POLICY "org_admins_read_members" ON profiles
+            FOR SELECT USING (
+              EXISTS (
+                SELECT 1 FROM public.org_members target
+                WHERE target.profile_id = profiles.id
+                AND is_org_admin(target.org_id)
+              )
+            );
+
+          -- Fix site_members policies
+          DROP POLICY IF EXISTS "site_members_read_own" ON site_members;
+          CREATE POLICY "site_members_read_own" ON site_members
+            FOR SELECT USING (
+              profile_id = auth.uid()
+              OR EXISTS (
+                SELECT 1 FROM public.sites s
+                WHERE s.id = site_members.site_id
+                AND (is_org_admin(s.org_id) OR get_user_org_role(s.org_id) = 'site_admin')
+              )
+            );
+
+          DROP POLICY IF EXISTS "site_admins_manage_site_members" ON site_members;
+          CREATE POLICY "site_admins_manage_site_members" ON site_members
+            FOR ALL USING (
+              EXISTS (
+                SELECT 1 FROM public.site_members AS sm
+                WHERE sm.site_id = site_members.site_id
+                AND sm.profile_id = auth.uid()
+                AND sm.role = 'site_admin'
+              )
+              OR EXISTS (
+                SELECT 1 FROM public.sites s
+                WHERE s.id = site_members.site_id
+                AND is_org_admin(s.org_id)
+              )
+            );
+
+          -- Fix pages policies
+          DROP POLICY IF EXISTS "site_members_read_pages" ON pages;
+          CREATE POLICY "site_members_read_pages" ON pages
+            FOR SELECT USING (
+              EXISTS (
+                SELECT 1 FROM public.site_members
+                WHERE site_members.site_id = pages.site_id
+                AND site_members.profile_id = auth.uid()
+              )
+              OR EXISTS (
+                SELECT 1 FROM public.sites s
+                WHERE s.id = pages.site_id
+                AND is_org_member(s.org_id)
+              )
+            );
+
+          DROP POLICY IF EXISTS "editors_manage_pages" ON pages;
+          CREATE POLICY "editors_manage_pages" ON pages
+            FOR ALL USING (
+              EXISTS (
+                SELECT 1 FROM public.site_members
+                WHERE site_members.site_id = pages.site_id
+                AND site_members.profile_id = auth.uid()
+                AND site_members.role IN ('site_admin', 'editor')
+              )
+              OR EXISTS (
+                SELECT 1 FROM public.sites s
+                WHERE s.id = pages.site_id
+                AND get_user_org_role(s.org_id) IN ('org_admin', 'site_admin')
+              )
+            );
+
+          -- Fix media policies
+          DROP POLICY IF EXISTS "site_members_read_media" ON media;
+          CREATE POLICY "site_members_read_media" ON media
+            FOR SELECT USING (
+              EXISTS (
+                SELECT 1 FROM public.site_members
+                WHERE site_members.site_id = media.site_id
+                AND site_members.profile_id = auth.uid()
+              )
+              OR EXISTS (
+                SELECT 1 FROM public.sites s
+                WHERE s.id = media.site_id
+                AND is_org_member(s.org_id)
+              )
+            );
+
+          DROP POLICY IF EXISTS "editors_manage_media" ON media;
+          CREATE POLICY "editors_manage_media" ON media
+            FOR ALL USING (
+              EXISTS (
+                SELECT 1 FROM public.site_members
+                WHERE site_members.site_id = media.site_id
+                AND site_members.profile_id = auth.uid()
+                AND site_members.role IN ('site_admin', 'editor')
+              )
+              OR EXISTS (
+                SELECT 1 FROM public.sites s
+                WHERE s.id = media.site_id
+                AND get_user_org_role(s.org_id) IN ('org_admin', 'site_admin')
+              )
+            );
+
+          -- Fix audit_logs policy
+          DROP POLICY IF EXISTS "org_admins_read_audit" ON audit_logs;
+          CREATE POLICY "org_admins_read_audit" ON audit_logs
+            FOR SELECT USING (is_org_admin(org_id));
+          SQLEOF
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $(cat /tmp/fix.sql | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')}")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY" | head -20
+
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo "FATAL: RLS fix failed"
+            exit 1
+          fi
+
+          echo "RLS recursion fix applied successfully"
