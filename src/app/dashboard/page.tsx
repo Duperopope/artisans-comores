@@ -311,7 +311,7 @@ function CmsDashboard({ onLogout }: { onLogout: () => void }) {
         </div>
         <div className="flex items-center gap-4">
           <a
-            href="/"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-white/60 hover:text-white transition-colors underline underline-offset-2"
