@@ -7,7 +7,7 @@
     "cta1Text": "Obtenir un devis gratuit",
     "cta2Text": "Nos services",
     "stats": [
-      { "value": "Proffesionels", "label": "Artisans" },
+      
       { "value": "7 jours", "label": "Pour votre devis" },
       { "value": "100%", "label": "Qualité garantie" }
     ]
