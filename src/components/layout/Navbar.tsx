@@ -36,9 +36,22 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <Link href="/contact" className="hidden md:inline-flex btn-primary text-sm py-2 px-5">
-          Devis gratuit
-        </Link>
+        <div className="hidden md:flex items-center gap-3">
+          <Link
+            href="/dashboard"
+            className="font-inter text-sm font-medium text-ocean-600 hover:text-ocean-800 transition-colors inline-flex items-center gap-1.5 py-1"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <polyline points="10 17 15 12 10 7" />
+              <line x1="15" y1="12" x2="3" y2="12" />
+            </svg>
+            Connexion
+          </Link>
+          <Link href="/contact" className="btn-primary text-sm py-2 px-5">
+            Devis gratuit
+          </Link>
+        </div>
 
         {/* Mobile menu button */}
         <button
@@ -77,7 +90,19 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
-            <li className="pt-2">
+            <li className="pt-2 flex flex-col gap-2">
+              <Link
+                href="/dashboard"
+                className="flex items-center justify-center gap-2 text-sm font-medium text-ocean-600 border border-ocean-200 rounded-xl py-2.5 hover:bg-ocean-50 transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+                Connexion
+              </Link>
               <Link
                 href="/contact"
                 className="btn-primary text-sm w-full justify-center"
