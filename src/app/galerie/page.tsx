@@ -122,7 +122,7 @@ export default function GaleriePage() {
             Votre projet sera notre prochaine réalisation
           </h2>
           <p className="text-neutral-500 font-inter mb-8 leading-relaxed">
-            Décrivez-nous vos travaux. Nous vous répondons avec un devis gratuit sous 48h.
+            Décrivez-nous vos travaux. Nous vous répondons avec un devis gratuit sous 7 Jours.
           </p>
           <a href="/contact" className="btn-primary">
             Demander un devis gratuit
