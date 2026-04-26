@@ -1,0 +1,44 @@
+name: Configure Supabase Auth URLs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  configure:
+    name: Update Supabase site_url and redirect URLs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Supabase Auth Configuration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          echo "==> Updating site_url and redirect URLs..."
+          HTTP_CODE=$(curl -s -o /tmp/response.json -w "%{http_code}" \
+            -X PATCH "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "site_url": "https://duperopope.github.io/artisans-comores",
+              "additional_redirect_urls": [
+                "http://localhost:3000/auth/callback",
+                "https://duperopope.github.io/artisans-comores/auth/callback",
+                "https://duperopope.github.io/artisans-comores/auth/callback/",
+                "https://duperopope.github.io/kairos-forge-site/auth/callback",
+                "https://duperopope.github.io/kairos-forge-site/auth/callback/",
+                "https://kairos-forge.vercel.app/auth/callback"
+              ]
+            }')
+          echo "HTTP status: $HTTP_CODE"
+          cat /tmp/response.json
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo "ERROR: Supabase API returned $HTTP_CODE"
+            exit 1
+          fi
+          echo ""
+          echo "==> Verifying configuration..."
+          curl -s "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" | \
+            python3 -c "import sys,json; d=json.load(sys.stdin); print('site_url:', d.get('site_url')); print('redirect_urls:', d.get('additional_redirect_urls'))"
+          echo ""
+          echo "Done. site_url updated to GitHub Pages."
