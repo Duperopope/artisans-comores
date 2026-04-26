@@ -1,0 +1,114 @@
+name: Seed platform data (one-time)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  seed:
+    name: Create test users and orgs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get service role key from Management API
+        id: keys
+        env:
+          ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          KEYS=$(curl -s "https://api.supabase.com/v1/projects/$PROJECT_REF/api-keys" \
+            -H "Authorization: Bearer $ACCESS_TOKEN")
+          SERVICE_KEY=$(echo "$KEYS" | node -e "process.stdin.resume();let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const keys=JSON.parse(d);const k=keys.find(k=>k.name==='service_role');console.log(k?k.api_key:'NOT_FOUND')})")
+          echo "::add-mask::$SERVICE_KEY"
+          echo "key=$SERVICE_KEY" >> $GITHUB_OUTPUT
+          SUPABASE_URL="https://${PROJECT_REF}.supabase.co"
+          echo "url=$SUPABASE_URL" >> $GITHUB_OUTPUT
+
+      - name: Create test users
+        env:
+          SUPABASE_URL: ${{ steps.keys.outputs.url }}
+          SERVICE_KEY: ${{ steps.keys.outputs.key }}
+        run: |
+          create_user() {
+            local email="$1" password="$2" name="$3"
+            echo "Creating user: $email"
+            RESP=$(curl -s -X POST "$SUPABASE_URL/auth/v1/admin/users" \
+              -H "apikey: $SERVICE_KEY" \
+              -H "Authorization: Bearer $SERVICE_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{\"email\":\"$email\",\"password\":\"$password\",\"email_confirm\":true,\"user_metadata\":{\"full_name\":\"$name\"}}")
+            echo "$RESP" | node -e "process.stdin.resume();let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const j=JSON.parse(d);console.log('  id:',j.id||'ERROR',j.msg||'')}catch(e){console.log('  parse error:',d)}})"
+          }
+          create_user "s.medjaher+superadmin@gmail.com" "KairosTest2026!" "Super Admin Kairos"
+          create_user "s.medjaher+orgadmin@gmail.com" "KairosTest2026!" "Admin Artisans Comores"
+          create_user "s.medjaher+siteadmin@gmail.com" "KairosTest2026!" "Site Admin"
+          create_user "s.medjaher+editor@gmail.com" "KairosTest2026!" "Editeur"
+          create_user "s.medjaher+viewer@gmail.com" "KairosTest2026!" "Lecteur"
+
+      - name: Get user IDs and seed data
+        env:
+          SUPABASE_URL: ${{ steps.keys.outputs.url }}
+          SERVICE_KEY: ${{ steps.keys.outputs.key }}
+        run: |
+          get_uid() {
+            curl -s "$SUPABASE_URL/auth/v1/admin/users?page=1&per_page=50" \
+              -H "apikey: $SERVICE_KEY" \
+              -H "Authorization: Bearer $SERVICE_KEY" \
+              | node -e "
+                process.stdin.resume();let d='';
+                process.stdin.on('data',c=>d+=c);
+                process.stdin.on('end',()=>{
+                  const data=JSON.parse(d);
+                  const users=data.users||[];
+                  const u=users.find(u=>u.email===process.argv[1]);
+                  console.log(u?u.id:'NOT_FOUND')
+                })" "$1"
+          }
+
+          SUPER_ID=$(get_uid "s.medjaher+superadmin@gmail.com")
+          ORG_ADMIN_ID=$(get_uid "s.medjaher+orgadmin@gmail.com")
+          SITE_ADMIN_ID=$(get_uid "s.medjaher+siteadmin@gmail.com")
+          EDITOR_ID=$(get_uid "s.medjaher+editor@gmail.com")
+          VIEWER_ID=$(get_uid "s.medjaher+viewer@gmail.com")
+          echo "Users: super=$SUPER_ID org=$ORG_ADMIN_ID site=$SITE_ADMIN_ID editor=$EDITOR_ID viewer=$VIEWER_ID"
+
+          if [ "$SUPER_ID" = "NOT_FOUND" ]; then echo "FATAL: super admin user not found"; exit 1; fi
+
+          post() { curl -s -X POST "$SUPABASE_URL/rest/v1/$1" -H "apikey: $SERVICE_KEY" -H "Authorization: Bearer $SERVICE_KEY" -H "Content-Type: application/json" -H "Prefer: return=representation" -d "$2"; }
+
+          echo "=== Creating Kairos Forge org ==="
+          KF_ORG=$(post "organizations" "{\"name\":\"Kairos Forge\",\"slug\":\"kairos-forge\",\"billing_email\":\"s.medjaher@gmail.com\",\"owner_id\":\"$SUPER_ID\"}" | node -e "process.stdin.resume();let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(Array.isArray(j)?j[0]?.id:j.id||j.message||'ERROR')})")
+          echo "  Kairos Forge org: $KF_ORG"
+
+          echo "=== Creating Artisans des Comores org ==="
+          AC_ORG=$(post "organizations" "{\"name\":\"Artisans des Comores\",\"slug\":\"artisans-comores\",\"billing_email\":\"s.medjaher@gmail.com\",\"owner_id\":\"$SUPER_ID\"}" | node -e "process.stdin.resume();let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(Array.isArray(j)?j[0]?.id:j.id||j.message||'ERROR')})")
+          echo "  Artisans des Comores org: $AC_ORG"
+
+          echo "=== Creating sites ==="
+          KF_SITE=$(post "sites" "{\"org_id\":\"$KF_ORG\",\"name\":\"Kairos Forge Site\",\"slug\":\"kairosforge\",\"domain\":\"kairosforge.com\",\"status\":\"published\"}" | node -e "process.stdin.resume();let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(Array.isArray(j)?j[0]?.id:j.id||j.message||'ERROR')})")
+          echo "  Kairos Forge site: $KF_SITE"
+          AC_SITE=$(post "sites" "{\"org_id\":\"$AC_ORG\",\"name\":\"Artisans des Comores\",\"slug\":\"artisans-comores\",\"domain\":\"artisanscomores.com\",\"status\":\"published\"}" | node -e "process.stdin.resume();let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(Array.isArray(j)?j[0]?.id:j.id||j.message||'ERROR')})")
+          echo "  Artisans des Comores site: $AC_SITE"
+
+          echo "=== Assigning org members ==="
+          post "org_members" "{\"org_id\":\"$KF_ORG\",\"profile_id\":\"$SUPER_ID\",\"role\":\"org_admin\"}"
+          post "org_members" "{\"org_id\":\"$AC_ORG\",\"profile_id\":\"$SUPER_ID\",\"role\":\"org_admin\"}"
+          post "org_members" "{\"org_id\":\"$AC_ORG\",\"profile_id\":\"$ORG_ADMIN_ID\",\"role\":\"org_admin\"}"
+          post "org_members" "{\"org_id\":\"$AC_ORG\",\"profile_id\":\"$SITE_ADMIN_ID\",\"role\":\"site_admin\"}"
+          post "org_members" "{\"org_id\":\"$AC_ORG\",\"profile_id\":\"$EDITOR_ID\",\"role\":\"editor\"}"
+          post "org_members" "{\"org_id\":\"$AC_ORG\",\"profile_id\":\"$VIEWER_ID\",\"role\":\"viewer\"}"
+          echo "  Org members assigned"
+
+          echo "=== Assigning site members ==="
+          post "site_members" "{\"site_id\":\"$AC_SITE\",\"profile_id\":\"$SITE_ADMIN_ID\",\"role\":\"site_admin\"}"
+          post "site_members" "{\"site_id\":\"$AC_SITE\",\"profile_id\":\"$EDITOR_ID\",\"role\":\"editor\"}"
+          post "site_members" "{\"site_id\":\"$AC_SITE\",\"profile_id\":\"$VIEWER_ID\",\"role\":\"viewer\"}"
+          echo "  Site members assigned"
+
+          echo ""
+          echo "=== SEED COMPLETE ==="
+          echo "Platform URL: https://kairosforge-platform.vercel.app"
+          echo "Test credentials (all passwords: KairosTest2026!):"
+          echo "  super_admin: s.medjaher+superadmin@gmail.com"
+          echo "  org_admin:   s.medjaher+orgadmin@gmail.com"
+          echo "  site_admin:  s.medjaher+siteadmin@gmail.com"
+          echo "  editor:      s.medjaher+editor@gmail.com"
+          echo "  viewer:      s.medjaher+viewer@gmail.com"
