@@ -7,8 +7,8 @@
     "cta1Text": "Obtenir un devis gratuit",
     "cta2Text": "Nos services",
     "stats": [
-      { "value": "4", "label": "Artisans experts" },
-      { "value": "48h", "label": "Pour votre devis" },
+      { "value": "Plusieurs", "label": "Artisans experts" },
+      { "value": "7 jours", "label": "Pour votre devis" },
       { "value": "100%", "label": "Qualité garantie" }
     ]
   },
@@ -39,7 +39,7 @@
     "heading": "Parlons de votre projet",
     "subheading": "Décrivez-nous vos travaux. Nous vous répondons sous 48h avec un devis clair et détaillé, sans engagement.",
     "features": [
-      "Réponse garantie sous 48h",
+      "Réponse garantie sous 7 jours",
       "Devis gratuit et sans engagement",
       "Informations confidentielles et protégées"
     ]
