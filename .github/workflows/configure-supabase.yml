@@ -20,14 +20,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
               "site_url": "https://duperopope.github.io/artisans-comores",
-              "additional_redirect_urls": [
-                "http://localhost:3000/auth/callback",
-                "https://duperopope.github.io/artisans-comores/auth/callback",
-                "https://duperopope.github.io/artisans-comores/auth/callback/",
-                "https://duperopope.github.io/kairos-forge-site/auth/callback",
-                "https://duperopope.github.io/kairos-forge-site/auth/callback/",
-                "https://kairos-forge.vercel.app/auth/callback"
-              ]
+              "uri_allow_list": "http://localhost:3000/auth/callback,https://duperopope.github.io/artisans-comores/auth/callback,https://duperopope.github.io/artisans-comores/auth/callback/,https://duperopope.github.io/kairos-forge-site/auth/callback,https://duperopope.github.io/kairos-forge-site/auth/callback/,https://kairos-forge.vercel.app/auth/callback"
             }')
           echo "HTTP status: $HTTP_CODE"
           cat /tmp/response.json
@@ -39,6 +32,6 @@ jobs:
           echo "==> Verifying configuration..."
           curl -s "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/auth" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" | \
-            python3 -c "import sys,json; d=json.load(sys.stdin); print('site_url:', d.get('site_url')); print('redirect_urls:', d.get('additional_redirect_urls'))"
+            python3 -c "import sys,json; d=json.load(sys.stdin); print('site_url:', d.get('site_url')); print('uri_allow_list:', d.get('uri_allow_list'))"
           echo ""
           echo "Done. site_url updated to GitHub Pages."
