@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   DEFAULT_CONTENT,
   fetchRemoteContent,
@@ -8,7 +9,8 @@ import {
   type SiteContent,
   type ServiceContent,
 } from "@/lib/content";
-import { getSupabase, isAdminEmail } from "@/lib/supabase";
+import { useAuth } from "@/components/AuthProvider";
+import { getSupabase } from "@/lib/supabase";
 
 type Tab = "hero" | "services" | "contact";
 
@@ -39,8 +41,8 @@ function AuthGate() {
   }
 
   return (
-    <div className="min-h-screen bg-ocean-950 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
+    <div className="min-h-[60vh] flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm border border-sand-200">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-xl bg-terracotta-600 flex items-center justify-center">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5" aria-hidden="true">
@@ -241,7 +243,7 @@ function ContactTab({
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
-function CmsDashboard({ onLogout }: { onLogout: () => void }) {
+function CmsDashboard() {
   const [tab, setTab] = useState<Tab>("hero");
   const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
   const [hydrated, setHydrated] = useState(false);
@@ -286,7 +288,7 @@ function CmsDashboard({ onLogout }: { onLogout: () => void }) {
 
   if (!hydrated) {
     return (
-      <div className="min-h-screen bg-sand-50 flex items-center justify-center">
+      <div className="min-h-[60vh] flex items-center justify-center">
         <div
           className="w-6 h-6 border-2 border-ocean-400 border-t-transparent rounded-full animate-spin"
           aria-label="Chargement du contenu…"
@@ -297,35 +299,35 @@ function CmsDashboard({ onLogout }: { onLogout: () => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-sand-50 font-inter">
-      <header className="bg-ocean-950 text-white px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-terracotta-600 flex items-center justify-center flex-shrink-0">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
-              <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+    <div className="font-inter">
+      {/* Dashboard breadcrumb / context bar */}
+      <div className="bg-ocean-950 text-white">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 rounded-lg bg-terracotta-600 flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5" aria-hidden="true">
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+            </div>
+            <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-sm">
+              <Link href="/" className="text-white/60 hover:text-white transition-colors">
+                Artisans Comores
+              </Link>
+              <span className="text-white/40" aria-hidden="true">/</span>
+              <span className="font-outfit font-semibold text-white">Dashboard CMS</span>
+            </nav>
+          </div>
+          <Link
+            href="/"
+            className="text-xs text-white/60 hover:text-white transition-colors flex items-center gap-1"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-          </div>
-          <div>
-            <span className="font-outfit font-semibold text-sm">CMS — Artisans Comores</span>
-          </div>
+            Voir le site
+          </Link>
         </div>
-        <div className="flex items-center gap-4">
-          <a
-            href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-white/60 hover:text-white transition-colors underline underline-offset-2"
-          >
-            Voir le site →
-          </a>
-          <button
-            onClick={onLogout}
-            className="text-xs text-white/60 hover:text-white transition-colors"
-          >
-            Déconnexion
-          </button>
-        </div>
-      </header>
+      </div>
 
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="mb-6 bg-ocean-50 border border-ocean-200 rounded-xl p-4 text-sm text-ocean-800 font-inter">
@@ -423,38 +425,9 @@ function CmsDashboard({ onLogout }: { onLogout: () => void }) {
 // ─── Page entry ───────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const [authed, setAuthed] = useState<boolean | null>(null);
+  const { user, isAdmin, loading } = useAuth();
 
-  useEffect(() => {
-    const supabase = getSupabase();
-    let active = true;
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!active) return;
-      const email = session?.user?.email ?? null;
-      setAuthed(isAdminEmail(email));
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!active) return;
-      const email = session?.user?.email ?? null;
-      setAuthed(isAdminEmail(email));
-    });
-
-    return () => {
-      active = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  async function logout() {
-    await getSupabase().auth.signOut();
-    setAuthed(false);
-  }
-
-  if (authed === null) return null;
-  if (!authed) return <AuthGate />;
-  return <CmsDashboard onLogout={logout} />;
+  if (loading) return null;
+  if (!user || !isAdmin) return <AuthGate />;
+  return <CmsDashboard />;
 }

@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ContentProvider } from "@/components/ContentProvider";
+import { AuthProvider } from "@/components/AuthProvider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -111,11 +112,13 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Passer au contenu principal
         </a>
-        <ContentProvider>
-          <Navbar />
-          <main id="main-content">{children}</main>
-          <Footer />
-        </ContentProvider>
+        <AuthProvider>
+          <ContentProvider>
+            <Navbar />
+            <main id="main-content">{children}</main>
+            <Footer />
+          </ContentProvider>
+        </AuthProvider>
       </body>
     </html>
   );

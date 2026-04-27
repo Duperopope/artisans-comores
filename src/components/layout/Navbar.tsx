@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/components/AuthProvider";
+import UserMenu from "@/components/layout/UserMenu";
 
 const PLATFORM_URL = process.env.NEXT_PUBLIC_PLATFORM_URL ?? "https://kairosforge-platform.vercel.app";
 
@@ -13,6 +15,7 @@ const navLinks = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, loading, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-sand-200 shadow-sm">
@@ -39,42 +42,57 @@ export default function Navbar() {
         </ul>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            href={`${PLATFORM_URL}/login`}
-            className="font-inter text-sm font-medium text-ocean-600 hover:text-ocean-800 transition-colors inline-flex items-center gap-1.5 py-1"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-              <polyline points="10 17 15 12 10 7" />
-              <line x1="15" y1="12" x2="3" y2="12" />
-            </svg>
-            Connexion
-          </Link>
-          <Link href="/contact" className="btn-primary text-sm py-2 px-5">
-            Devis gratuit
-          </Link>
+          {!loading && !user && (
+            <>
+              <Link
+                href={`${PLATFORM_URL}/login`}
+                className="font-inter text-sm font-medium text-ocean-600 hover:text-ocean-800 transition-colors inline-flex items-center gap-1.5 py-1"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+                Connexion
+              </Link>
+              <Link href="/contact" className="btn-primary text-sm py-2 px-5">
+                Devis gratuit
+              </Link>
+            </>
+          )}
+          {!loading && user && (
+            <>
+              <Link href="/contact" className="btn-primary text-sm py-2 px-5">
+                Devis gratuit
+              </Link>
+              <UserMenu />
+            </>
+          )}
         </div>
 
         {/* Mobile menu button */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden p-2 rounded-lg text-ocean-900 hover:bg-sand-100 transition-colors"
-          aria-expanded={menuOpen}
-          aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
-        >
-          {menuOpen ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          )}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          {!loading && user && <UserMenu />}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-2 rounded-lg text-ocean-900 hover:bg-sand-100 transition-colors"
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          >
+            {menuOpen ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}
@@ -93,18 +111,36 @@ export default function Navbar() {
               </li>
             ))}
             <li className="pt-2 flex flex-col gap-2">
-              <Link
-                href={`${PLATFORM_URL}/login`}
-                className="flex items-center justify-center gap-2 text-sm font-medium text-ocean-600 border border-ocean-200 rounded-xl py-2.5 hover:bg-ocean-50 transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                  <polyline points="10 17 15 12 10 7" />
-                  <line x1="15" y1="12" x2="3" y2="12" />
-                </svg>
-                Connexion
-              </Link>
+              {!loading && !user && (
+                <Link
+                  href={`${PLATFORM_URL}/login`}
+                  className="flex items-center justify-center gap-2 text-sm font-medium text-ocean-600 border border-ocean-200 rounded-xl py-2.5 hover:bg-ocean-50 transition-colors"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                  </svg>
+                  Connexion
+                </Link>
+              )}
+              {!loading && user && (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    signOut();
+                  }}
+                  className="flex items-center justify-center gap-2 text-sm font-medium text-red-600 border border-red-200 rounded-xl py-2.5 hover:bg-red-50 transition-colors"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  Déconnexion
+                </button>
+              )}
               <Link
                 href="/contact"
                 className="btn-primary text-sm w-full justify-center"
